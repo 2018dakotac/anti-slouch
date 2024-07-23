@@ -4,6 +4,19 @@ import csv
 import numpy as np
 
 
+  # Function to determine if the user is slouching
+def is_slouching(landmarks):
+    left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
+    right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
+    left_eye = landmarks[mp_pose.PoseLandmark.LEFT_EYE.value]
+    right_eye = landmarks[mp_pose.PoseLandmark.RIGHT_EYE.value]
+
+    avg_shoulder_y = (left_shoulder.y + right_shoulder.y) / 2
+    avg_eye_y = (left_eye.y + right_eye.y) / 2
+
+    diff = avg_shoulder_y - avg_eye_y
+
+    return diff < 0.5  # Threshold for slouching
 
 def collect_posture_data(output_csv='posture_data.csv', duration=60):
     """
@@ -13,22 +26,6 @@ def collect_posture_data(output_csv='posture_data.csv', duration=60):
         output_csv (str): The name of the output CSV file.
         duration (int): The duration for data collection in seconds.
     """
-    
-
-    # Function to determine if the user is slouching
-    def is_slouching(landmarks):
-        left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
-        right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
-        left_eye = landmarks[mp_pose.PoseLandmark.LEFT_EYE.value]
-        right_eye = landmarks[mp_pose.PoseLandmark.RIGHT_EYE.value]
-
-        avg_shoulder_y = (left_shoulder.y + right_shoulder.y) / 2
-        avg_eye_y = (left_eye.y + right_eye.y) / 2
-
-        diff = avg_shoulder_y - avg_eye_y
-
-        return diff < 0.5  # Threshold for slouching
-
     # Start video capture
     cap = cv2.VideoCapture(0)
     data = []
@@ -153,9 +150,8 @@ if __name__ == "__main__":
     # Initialize MediaPipe Pose model
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
-
     # Initialize MediaPipe drawing utils
     mp_drawing = mp.solutions.drawing_utils
+
     check_posture()
     pose.close()
-    print("test")
