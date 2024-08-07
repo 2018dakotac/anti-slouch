@@ -28,11 +28,7 @@ def is_slouching_hardcoded(left_shoulder, right_shoulder, left_eye, right_eye):
     return diff < 0.5 
 
 
-import cv2
-import json
-import mediapipe as mp
-
-def collect_posture_data(reference_poses={'normal': False, 'incorrect': True, 'incorrect_hands': True}, duration=30):
+def collect_posture_data(reference_poses={'normal': False, 'incorrect': True, 'incorrect_hands': True}, duration=10):
     # Initialize MediaPipe Pose model
     mp_pose = mp.solutions.pose
     mp_drawing = mp.solutions.drawing_utils
@@ -84,7 +80,7 @@ def collect_posture_data(reference_poses={'normal': False, 'incorrect': True, 'i
                 if key == ord('s'):
                     collecting_data = True
                     start_time = cv2.getTickCount()  # Reset start time when starting data collection
-                elif key == ord('q'):
+                elif key == ord('q') or cv2.getWindowProperty('Posture Check', cv2.WND_PROP_VISIBLE) < 1:
                     print(f"Skipping {pose_name} data collection")
                     collecting_data = False
                     break
